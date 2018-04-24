@@ -1,0 +1,101 @@
+$font: 'Arimo', sans-serif;
+$hfont: 'Source Sans Pro', sans-serif;
+
+$highlited-color:#23abeb;
+
+$border: 1px solid rgb(226, 226, 226);
+
+header{
+    font-family: $font;
+    height: 35px;
+    background: black;
+    padding: 5px;
+    display: flex;
+    align-items: center;
+    #menu{
+        display: flex;
+        margin-left: auto;
+        a{
+            display: block;
+            font-size: 12px;
+            color: rgb(99, 99, 99);
+            text-decoration: none;  
+        }
+        a:not(:last-child){
+            margin-right: 15px;
+        }
+        a:hover{
+            color: rgb(175, 175, 175);
+        }
+    }
+}
+#sub-header{
+    border-bottom: $border;
+    display: flex;
+    align-items: center;
+    height: 60px;
+    padding: 0px 10px;
+    span{
+        font-family: $font;
+        font-size: 10pt;
+    }
+    img{
+        margin-right: 10px;
+    }
+    .right-align{
+        margin-left: auto;
+    }
+    #user-info{
+        height: 100%;
+        float: right;
+        display: flex;
+        align-items: center;
+        #user-icon{
+            text-transform: uppercase;
+            border: 1px solid rgb(216, 216, 216);
+            border-radius: 100%;
+            padding: 10px;
+            background: rgb(243, 243, 243);
+        }
+        span.user-name{
+            margin-right: 15px;
+            color: $highlited-color;
+        }
+    }
+    #head-name{
+        margin-right: auto;
+    }
+}
+
+button{
+    background: $highlited-color;
+    border: none;
+    border-radius: 3px;
+    color:white;
+    align-items: center;
+    display: flex;
+    cursor: pointer;
+}
+button:hover{
+    background: #3bb6f0;
+}
+button:focus{
+    outline:none;
+    border:none;
+}
+div::-webkit-scrollbar,{
+    background: white;
+    width: 5px;
+}
+div::-webkit-scrollbar-thumb{
+    background:rgb(255, 255, 255);
+    transition: .3s;
+}
+div:hover::-webkit-scrollbar-thumb{
+    background:rgb(236, 236, 236);
+}
+.content-board{
+    background: #f0f4f5;
+    padding: 5%;
+    flex: 1;
+}

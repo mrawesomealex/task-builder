@@ -1,5 +1,6 @@
 <template>
     <div id="library-wrap">
+        <new-project-window v-if="newFlag" @closeWindow="newFlag = false"></new-project-window>
         <div class="project" v-for="(project, key) in projects" :key="key">
             <span>{{project.date}}</span>
             <h1>{{project.name}}</h1>
@@ -10,7 +11,7 @@
                 </div>
             </div>  
         </div>
-        <div class="new">
+        <div class="new" @click="openNewWindow">
             <img src="../assets/common/add.svg" width="25px"/>
             <span>Создать Новый</span>
         </div>
@@ -18,6 +19,8 @@
 </template>
 
 <script>
+import NewProjectWindow from '@/components/modals/NewProject'
+
 export default {
   data () {
     return {
@@ -46,8 +49,17 @@ export default {
             'Александр', 'Евгений', 'Lavina325', 'Матенишков'
           ]
         }
-      ]
+      ],
+      newFlag: false
     }
+  },
+  methods: {
+    openNewWindow () {
+      this.newFlag = true
+    }
+  },
+  components: {
+    NewProjectWindow
   }
 }
 </script>

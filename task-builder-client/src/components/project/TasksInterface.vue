@@ -1,7 +1,17 @@
 <template>
     <div class="content-board" id="task-board">
+        <new-sprint-window v-if="newSprintFlag" @closeWindow="newSprintFlag = false"></new-sprint-window>
+        <new-task-window v-if="newTaskFlag" @closeWindow="newTaskFlag = false" :sprint="currentSprint"></new-task-window>
+        <div v-if="menuSprint" id="newWindow">
+            <div id="sprint-submenu" class="modal">
+                <div @click="newTaskFlag = true">Добавить таск</div>
+                <div>Изменить спринт</div>
+                <div>Удалить спринт</div>
+                <button @click="checking()">Закрыть</button>
+            </div>
+        </div>
         <div id="sprint-menu">
-            <div>
+            <div @click="newSprintFlag = true">
                 <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" id="Capa_1" x="0px" y="0px" viewBox="0 0 384 384" style="enable-background:new 0 0 384 384;" xml:space="preserve" width="512px" height="512px">
                     <g>
                         <path d="M341.333,0H42.667C19.093,0,0,19.093,0,42.667v298.667C0,364.907,19.093,384,42.667,384h298.667    C364.907,384,384,364.907,384,341.333V42.667C384,19.093,364.907,0,341.333,0z M298.667,213.333h-85.333v85.333h-42.667v-85.333    H85.333v-42.667h85.333V85.333h42.667v85.333h85.333V213.333z" />
@@ -10,8 +20,8 @@
             </div>
         </div>
         <div id="sprint-content">
-            <div v-for="(sprint, key) in sprints" :key="key" :class="'sprint sprint' + key"   @dragover.stop.prevent.self="addToSprint($event)" @drop.stop.prevent="putTask(key)">
-                <div @drop.prevent class="head">
+            <div @click="checking($event, sprint.name)" v-for="(sprint, key) in sprints" :key="key" :class="'sprint sprint' + key"   @dragover.stop.prevent.self="addToSprint($event)" @drop.stop.prevent.self="putTask(key)">
+                <div class="head">
                     <div class="status-bar">
                         <svg v-if="sprint.done" :class="['status-icon',{done: sprint.done}]" version="1.1" id="Capa_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="30px" height="30px" x="0px" y="0px"
                             viewBox="-1 -1 60 60" style="enable-background:new 0 0 55 55;" xml:space="preserve">
@@ -21,7 +31,6 @@
                         </svg>
                         <span class="date">{{sprint.startDate}} - </span>
                         <span class="date">{{sprint.endDate}}</span>
-                        <img src="../../assets/common/more.svg" width="20px" height="100%"/>
                     </div>
                     <h1>{{sprint.name}}</h1>
                 </div>
@@ -33,14 +42,10 @@
                             <polyline stroke="#23abeb" style="fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:10;" points="
                                 38,15 22,33 12,25 "/>
                         </svg>
-                        <div v-if="task.label.length" class="task-label">
-                            <div v-for="(color, key3) in task.label" :key="key3" :class="'label label' + color"></div>
-                        </div>
                         <h3>{{task.name}}</h3>
                         <p class="date">{{task.date}}</p>
                         <p class="info">
                             <img src="../../assets/common/profile.svg" width="12pt"/><span>{{task.users.length}}</span>
-                            <img src="../../assets/common/speech-bubble.svg" width="14pt"/><span>{{task.comments}}</span>
                         </p>
                     </div>
                 </div>
@@ -51,6 +56,9 @@
 
 <script>
 import Vue from 'vue'
+import NewSprintWindow from '@/components/project/modals/SprintModal'
+import NewTaskWindow from '@/components/project/modals/TaskModal'
+
 export default {
   data() {
     return {
@@ -250,10 +258,18 @@ export default {
         }
       ],
       draggableParent: '',
-      draggableTask: null
+      draggableTask: null,
+      newSprintFlag: false,
+      menuSprint: false,
+      newTaskFlag: false,
+      currentSprint: ''
     }
   },
   methods: {
+    checking(e,sprintName) {
+        this.menuSprint = !this.menuSprint
+        this.currentSprint = sprintName
+    },
     setParent(e) {
       this.draggableParent = e.target.parentElement.classList[1]
       e.target.classList.add('moving')
@@ -306,12 +322,20 @@ export default {
       this.removeFromSprint()
       document.getElementsByClassName('moving')[0].classList.remove('moving')
     }
+  },
+  components: {
+    NewSprintWindow,
+    NewTaskWindow
   }
 }
 </script>
 
 <style lang="scss" scoped>
 @import "../../assets/common/styles.scss";
+#newWindow{
+    width: 100% !important;
+    height: 100% !important;
+}
 #task-board::-webkit-scrollbar{
     height: 5px;
     width:3px;
@@ -357,6 +381,11 @@ export default {
           margin-right: 12px;
       }
   }
+  #sprint-submenu{
+      div{
+          margin-bottom: 20px;
+      }
+  }
   #sprint-content{
       margin-left: 0;
       animation: fromRight 0.3s forwards;
@@ -385,9 +414,6 @@ export default {
               img{
                   margin-left: auto;
                   opacity: .5;
-              }
-              img:hover{
-                cursor: pointer;
               }
           }
           span,div,h3{

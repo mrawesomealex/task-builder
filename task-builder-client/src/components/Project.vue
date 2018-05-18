@@ -1,29 +1,37 @@
 <template>
     <div id="project-content">
+        <new-group-window v-if="newGroupFlag" @closeWindow="newGroupFlag = false"></new-group-window>
+        <new-user-window v-if="newUserFlag"  @closeWindow="newUserFlag = false"></new-user-window>
         <div id="groups">
             <ul class="group" v-for="(group, key) in groups" :key="key">
                 <li class="group-name">
                     <div>{{group.group}}</div>
-                    <img src="../assets/common/more.svg" width="20px" height="100%"/>
+                    <label :for="'menuGroupOpen' + key"><img src="../assets/common/more.svg" width="20px" height="100%"/></label>
+                    <input class="checkbox" :id="'menuGroupOpen' + key" type="checkbox"/>
+                    <div>
+                        <div @click="newUserFlag = true">Добавить пользователя</div>
+                        <div>Удалить группу</div>
+                    </div>
                 </li>
                 <li class="user" v-for="(user, key) in group.users" :key="key">
                    <button>-</button>
                    <span>{{user}}</span>
                 </li>
             </ul>
-            <button>Добавить Группу</button>
+            <button @click="newGroupFlag = true">Добавить Группу</button>
         </div>
         <div id="content">
             <div id="menu">
                 <router-link tag="button" to="tasks" :class="{current: this.$router.history.current.path.search('tasks') > -1}">Менеджер тасков</router-link>
                 <router-link tag="button" to="diagrams" :class="{current: this.$router.history.current.path.search('diagrams') > -1}">Диаграммы</router-link>
-                <router-link tag="button" to="users" :class="{current: this.$router.history.current.path.search('users') > -1}">Пользователи</router-link>
             </div>
             <router-view></router-view>
         </div>
     </div>
 </template>
 <script>
+    import NewGroupWindow from '@/components/project/modals/GroupModal'
+    import NewUserWindow from '@/components/project/modals/UserModal'
     export default {
       data() {
         return {
@@ -54,11 +62,17 @@
               ]
             },
           ],
-          current: 'tasks'
+          current: 'tasks',
+          newGroupFlag: false,
+          newUserFlag: false
         }
       },
       created: function () {
         this.$emit('projectInit', this.name)
+      },
+      components: {
+        NewGroupWindow,
+        NewUserWindow
       }
     }
 </script>
@@ -90,6 +104,9 @@
           opacity: 0;
           margin-left: auto;
           transition: .2s;
+        }
+        div>div{
+            margin-bottom: 10px;
         }
       }
       .group{

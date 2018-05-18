@@ -8,7 +8,6 @@ import Project from '@/components/Project'
 //Prject Interfaces
 import Diagrams from '@/components/project/DiagramsInterface'
 import Tasks from '@/components/project/TasksInterface'
-import Users from '@/components/project/UsersInterface'
 
 Vue.use(Router)
 
@@ -44,12 +43,7 @@ export default new Router({
               path: 'diagrams',
               name: 'diagrams',
               component:Diagrams
-            },
-            {
-              path: 'users',
-              name: 'users',
-              component:Users
-            }         
+            }
           ]
         }        
       ]

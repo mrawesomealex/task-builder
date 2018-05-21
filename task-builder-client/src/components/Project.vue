@@ -5,16 +5,16 @@
         <div id="groups">
             <ul class="group" v-for="(group, key) in groups" :key="key">
                 <li class="group-name">
-                    <div>{{group.group}}</div>
+                    <div>{{group.name}}</div>
                     <label :for="'menuGroupOpen' + key"><img src="../assets/common/more.svg" width="20px" height="100%"/></label>
                     <input class="checkbox" :id="'menuGroupOpen' + key" type="checkbox"/>
                     <div>
                         <div @click="newUserFlag = true">Добавить пользователя</div>
-                        <div>Удалить группу</div>
+                        <div v-if="!group.name === 'Администраторы'">Удалить группу</div>
                     </div>
                 </li>
                 <li class="user" v-for="(user, key) in group.users" :key="key">
-                   <button>-</button>
+                   <button v-if="user !== $router.history.current.query.username && group.name === 'Администраторы'">-</button>
                    <span>{{user}}</span>
                 </li>
             </ul>
@@ -32,43 +32,29 @@
 <script>
     import NewGroupWindow from '@/components/project/modals/GroupModal'
     import NewUserWindow from '@/components/project/modals/UserModal'
+    import Group from '@/services/GroupsService'
+
     export default {
       data() {
         return {
           name: 'Тестовый проект',
-          groups: [
-            {
-              group: 'Менеджмент',
-              users: [
-                'Имя Пользователя',
-                'Екатерина Станиславова',
-                'Paling220997'
-              ]
-            },
-            {
-              group: 'Дизайн',
-              users: [
-                'Имя Пользователя',
-                'Екатерина Станисловаова',
-                'Paling220997'
-              ]
-            },
-            {
-              group: 'Разработка',
-              users: [
-                'Имя Пользователя',
-                'Екатерина Станисловаова',
-                'Paling220997'
-              ]
-            },
-          ],
+          groups: [],
           current: 'tasks',
           newGroupFlag: false,
           newUserFlag: false
         }
       },
-      created: function () {
-        this.$emit('projectInit', this.name)
+      created () {
+        Group.load(this.$router.history.current.query.projId).then(result => {
+            let jsonObj
+            for(let i = 0; i < result.data.length; i++) {
+                this.groups[i] = {}
+                this.groups[i].id = result.data[i].id
+                this.groups[i].name = i === 0 ? 'Администраторы' : result.data[i].name
+                jsonObj = JSON.parse(result.data[i].users)
+                this.groups[i].users = jsonObj
+            }
+        })
       },
       components: {
         NewGroupWindow,

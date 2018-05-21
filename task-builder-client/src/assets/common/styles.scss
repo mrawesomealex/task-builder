@@ -181,3 +181,24 @@ div:hover::-webkit-scrollbar-thumb{
     margin-bottom: 10px;
     z-index: 3;
 }
+.form-block{
+    display: flex;
+    flex-direction: column;
+    width: 300px;
+    margin: 0 auto;
+    text-align: center;
+    *{
+        margin: 5px 0px;
+    }
+    input{
+        padding: 10px;
+    }
+    h1{
+        font-size: 16pt;
+        margin: 20px 0px;
+    }
+    button{
+       display: inline-block;
+       padding: 15px;
+    }
+}

@@ -10,13 +10,13 @@
         </header>
         <div id="sub-header">
            <span v-if="!project"><i>Выберите или создайте проект, чтобы приступить к работе</i></span>
-           <div id="head-name" v-if="project">{{project}}</div>
+           <div id="head-name" v-if="project">{{project.name}}</div>
            <div id="user-info" :class="{'right-align': !project}">
                <div><span>Здравствуйте, </span><span class="user-name">{{user}}</span></div>
                <div id="user-icon">{{user.substr(0,2)}}</div>
            </div>
         </div>
-        <router-view @projectInit="initializeProject"></router-view>
+        <router-view @projectInit="initializeProject" ></router-view>
     </div>
 </template>
 
@@ -24,26 +24,17 @@
     export default {
         data() {
             return {
-                projects: 22,
                 project: null,
-                user: 'Александр',
-                lastActions: [
-                    {
-                        name: 'Юлия выполнила таск "Фикс шапки сайта на мобильных экранах"',
-                        date: '12.09.2018',
-                        seen: true
-                    },
-                    {
-                        name: 'Юлия выполнила таск "Фикс шапки сайта на мобильных экранах"',
-                        date: '12.09.2018',
-                        seen: false
-                    }
-                ]
+                user: ''
             }
+        },
+        created () {
+          this.user = this.$router.history.current.query.username
         },
         methods: {
             initializeProject (name) {
                 this.project = name
+                this.$router.push({path: '/profile/project/tasks?projId=' + this.project.id + '&username=' + this.user})
             }
         }
     }

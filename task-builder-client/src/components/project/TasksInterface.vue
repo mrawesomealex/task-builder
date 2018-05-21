@@ -20,7 +20,7 @@
             </div>
         </div>
         <div id="sprint-content">
-            <div @click="checking($event, sprint.name)" v-for="(sprint, key) in sprints" :key="key" :class="'sprint sprint' + key"   @dragover.stop.prevent.self="addToSprint($event)" @drop.stop.prevent.self="putTask(key)">
+            <div @click.self="checking($event, sprint.name)" v-for="(sprint, key) in sprints" :key="key" :class="'sprint sprint' + key"   @dragover.stop.prevent.self="addToSprint($event)" @drop.stop.prevent.self="putTask(key)">
                 <div class="head">
                     <div class="status-bar">
                         <svg v-if="sprint.done" :class="['status-icon',{done: sprint.done}]" version="1.1" id="Capa_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="30px" height="30px" x="0px" y="0px"

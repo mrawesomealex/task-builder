@@ -1,14 +1,14 @@
 <template>
     <div id="library-wrap">
-        <new-project-window v-if="newFlag" @closeWindow="newFlag = false"></new-project-window>
-        <div class="project" v-for="(project, key) in projects" :key="key">
-            <span>{{project.date}}</span>
+        <new-project-window v-if="newFlag" @closeWindow="newFlag = false" @newAdded="UpdateLibrary"></new-project-window>
+        <edit-project-window v-if="edited"  @closeWindow="edited = ''" @editComplete="UpdateLibrary" :project="edited"></edit-project-window>
+        <div @click.self="loadProject(project)" class="project" v-for="(project, key) in projects" :key="key">
+            <span>{{dataParse(project.creationDate)}}</span>
             <h1>{{project.name}}</h1>
             <p>{{project.desc}}</p>
-            <div class="users">
-                <div class="user" v-for="(user, key2) in project.users" :key="key2">
-                    {{user.substr(0,2)}}
-                </div>
+            <div class="controls">
+                <button @click="openEditWindow(project)">Изменить</button>
+                <button @click="removeProj(project.id)">Удалить</button>
             </div>  
         </div>
         <div class="new" @click="openNewWindow">
@@ -20,46 +20,73 @@
 
 <script>
 import NewProjectWindow from '@/components/modals/NewProject'
+import EditProjectWindow from '@/components/modals/EditProject'
+import Project from '@/services/ProjectService'
 
 export default {
   data () {
     return {
-      projects: [
-        {
-          date: '12.10.2018',
-          name: 'Пример название проекта',
-          desc: 'Проект тявялется тестовым и никакой важной ифнормации в себе не несёт',
-          users: [
-            'Александр', 'Евгений', 'Lavina325', 'Матенишков'
-          ]
-        },
-        {
-          date: '12.10.2018',
-          name: 'Пример название проекта',
-          desc: 'Проект тявялется тестовым и никакой важной ифнормации в себе не несёт',
-          users: [
-            'Александр', 'Евгений', 'Lavina325', 'Матенишков'
-          ]
-        },
-        {
-          date: '12.10.2018',
-          name: 'Пример название проекта',
-          desc: 'Проект тявялется тестовым и никакой важной ифнормации в себе не несёт',
-          users: [
-            'Александр', 'Евгений', 'Lavina325', 'Матенишков'
-          ]
-        }
-      ],
-      newFlag: false
+      projects: '',
+      newFlag: false,
+      edited: ''
+    }
+  },
+  created: function () {
+    if (this.$router.history.current.query.email === localStorage.email) {
+        this.load()
+    } else {
+        this.$router.replace('/enter')
     }
   },
   methods: {
+    load () {
+       Project.load(localStorage.email).then(
+          res => {
+            if (res.data.error) {
+              this.$router.replace('/enter')
+            } else {
+              if (!res.data.message) {
+                  this.projects = res.data
+              }
+            }
+          },
+          err => {
+            console.log('Произошла ошибка: ' + err)
+          }
+        )
+    },
     openNewWindow () {
       this.newFlag = true
+    },
+    openEditWindow (project) {
+      this.edited = project
+    },
+    UpdateLibrary () {
+      this.newFlag = false
+      this.edited = ''
+      this.projects = ''
+      this.load()
+    },
+    dataParse (date) {
+       let datObj = new Date(date)
+       return 'Cоздан ' + datObj.getDate() + '.' + (datObj.getMonth() + 1) + '.' + datObj.getFullYear()
+    },
+    loadProject (data) {
+        this.$emit('projectInit', data)
+    },
+    removeProj (id) {
+      Project.remove({
+          email: localStorage.email,
+          id: id
+      }).then((res) => {
+          this.projects = ''
+          this.load()
+      })
     }
   },
   components: {
-    NewProjectWindow
+    NewProjectWindow,
+    EditProjectWindow
   }
 }
 </script>
@@ -107,22 +134,14 @@ export default {
           line-height: 25px;
           color: rgb(26, 26, 26);
       }
-      .users{
+      .controls{
           display: flex;
           align-items: center;
           position: absolute;
           bottom: 20px;
-          .user{
-              display: flex;
-              align-items: center;
-              justify-content: center;
-              text-transform: uppercase;
-              margin-right: 20px;
-              width: 40px;
-              height: 40px;
-              background: #23abeb;
-              border-radius: 100%;
-              color: white;
+          button{
+              padding: 10px;
+              margin-right: 10px;
           }
       }
   }

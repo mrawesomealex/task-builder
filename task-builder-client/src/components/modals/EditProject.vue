@@ -1,10 +1,10 @@
 <template>
     <div id="newWindow">
         <div class="modal">
-            <h1>Создание нового проекта</h1>
+            <h1>{{'Изменить данные проекта ' + project.name}}</h1>
             <input id="name" type="text" placeholder="Введите название проекта" v-model="name"/>
             <textarea id="desc" type="text" maxlength="500" placeholder="Введите описание проекта" v-model="desc"></textarea>
-            <button @click="Create">Создать</button>
+            <button @click="Edit">Сохранить изменения</button>
             <button @click="$emit('closeWindow')">Отмена</button>
         </div>
     </div>
@@ -19,21 +19,26 @@ import Project from '@/services/ProjectService'
                 desc: ''
             }
         },
+        props: ['project'],
+        created () {
+            this.name = this.project.name
+            this.desc = this.project.desc
+        },
         methods: {
-            Create () {
-                Project.create({
-                  email: localStorage.email,
-                  name: this.name,
-                  creationDate: new Date(),
-                  desc: this.desc
+            Edit () {
+                Project.edit({
+                    id: this.project.id,
+                    name: this.name,
+                    desc: this.desc
                 }).then((res) => {
-                    if (!res.data.error){
-                        
-                        this.$emit('newAdded')
+                    if (res.data.error) {
+                      console.error(res.data.error)
                     } else {
-                        console.error(res.data.error)
+                      console.log(res.data)
+                      this.$emit('editComplete')
                     }
-                })
+                  }
+                )
             }
         }
     }
